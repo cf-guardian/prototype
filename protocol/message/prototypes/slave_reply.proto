@@ -1,0 +1,6 @@
+package message;
+
+message SlaveReply {
+  required string Reply = 1;
+  optional string Error = 2;
+}

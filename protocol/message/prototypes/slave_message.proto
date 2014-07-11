@@ -1,0 +1,6 @@
+package message;
+
+message SlaveMessage {
+  required string Msg = 1;
+  optional string Reply = 2;
+}
