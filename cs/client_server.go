@@ -16,8 +16,8 @@ func main() {
 	if len(args) > 1 && args[1] == "server" {
 		server()
 	} else {
-		fmt.Println("About to start the server")
 		cmd := exec.Command(args[0], "server")
+
 		if err := cmd.Start(); err != nil {
 			log.Fatal(err)
 		}
@@ -26,7 +26,7 @@ func main() {
 		client()
 
 		if err := cmd.Wait(); err != nil {
-			log.Fatal(err)
+			log.Fatalf("cmd.Wait failed: %v", err)
 		}
 	}
 }
@@ -62,18 +62,15 @@ func server() {
 			log.Fatal(err)
 		}
 		go func(connection net.Conn) {
-			defer connection.Close()
-
-			req := receive(connection)
-			if req == "exit\n" {
-				connection.Close()
-				os.Exit(0)
+			for {
+				req := receive(connection)
+				if req == "exit\n" {
+					connection.Close()
+					os.Exit(0)
+				}
+				response := fmt.Sprintf("response to %s\n", strings.Trim(req, "\n"))
+				send(connection, response)
 			}
-
-			response := fmt.Sprintf("response to %s\n", req)
-			send(connection, response)
-
-			fmt.Println("Connection closed on server")
 		}(connection)
 	}
 }
@@ -89,11 +86,12 @@ func receive(connection net.Conn) string {
 	done := false
 	for !done {
 		reply := make([]byte, 1024)
-		if _, err := connection.Read(reply); err != nil {
+		n, err := connection.Read(reply)
+		if err != nil {
 			log.Fatal(err)
 		}
-		rep := string(reply)
-		result = result + rep
+		rep := string(reply[:n])
+		result = result+rep
 		if strings.Index(rep, "\n") != -1 {
 			done = true
 		}
