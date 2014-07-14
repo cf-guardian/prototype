@@ -1,6 +1,7 @@
 package message;
 
+// NB: Use lower-case names for the fields in a message, o/w IntelliJ gets confused somehow.
 message SlaveMessage {
-  required string Msg = 1;
-  optional string Reply = 2;
+  required string msg = 1;
+  optional string reply = 2;
 }

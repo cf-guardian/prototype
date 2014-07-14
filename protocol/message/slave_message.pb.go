@@ -22,8 +22,8 @@ var _ = proto.Marshal
 var _ = math.Inf
 
 type SlaveMessage struct {
-	Msg              *string `protobuf:"bytes,1,req" json:"Msg,omitempty"`
-	Reply            *string `protobuf:"bytes,2,opt" json:"Reply,omitempty"`
+	Msg              *string `protobuf:"bytes,1,req,name=msg" json:"msg,omitempty"`
+	Reply            *string `protobuf:"bytes,2,opt,name=reply" json:"reply,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
