@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"os/exec"
@@ -10,11 +11,37 @@ import (
 	"time"
 )
 
-func main() {
+type netAccepter struct {
+	listener net.Listener
+}
 
+func (ca *netAccepter) Accept() (io.ReadWriter, error) {
+	return ca.listener.Accept()
+}
+
+func toAccepter(listener net.Listener) Accepter {
+	return &netAccepter{listener}
+}
+
+func main() {
 	args := os.Args
 	if len(args) > 1 && args[1] == "server" {
-		server()
+		listener, err := net.Listen("tcp", ":2345")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer listener.Close()
+
+		server(toAccepter(listener), func(connection io.ReadWriter) (bool, int) {
+				for {
+					req := receive(connection)
+					if req == "exit\n" {
+						return true, 0
+					}
+					response := fmt.Sprintf("response to %s\n", strings.Trim(req, "\n"))
+					send(connection, response)
+				}
+			})
 	} else {
 		cmd := exec.Command(args[0], "server")
 
@@ -50,38 +77,13 @@ func client() {
 	send(connection, "exit\n")
 }
 
-func server() {
-	listener, err := net.Listen("tcp", ":2345")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer listener.Close()
-	for {
-		connection, err := listener.Accept()
-		if err != nil {
-			log.Fatal(err)
-		}
-		go func(connection net.Conn) {
-			for {
-				req := receive(connection)
-				if req == "exit\n" {
-					connection.Close()
-					os.Exit(0)
-				}
-				response := fmt.Sprintf("response to %s\n", strings.Trim(req, "\n"))
-				send(connection, response)
-			}
-		}(connection)
-	}
-}
-
-func send(connection net.Conn, request string) {
+func send(connection io.Writer, request string) {
 	if _, err := connection.Write([]byte(request)); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func receive(connection net.Conn) string {
+func receive(connection io.Reader) string {
 	result := ""
 	done := false
 	for !done {
@@ -97,4 +99,24 @@ func receive(connection net.Conn) string {
 		}
 	}
 	return result
+}
+
+type Accepter interface {
+	Accept() (io.ReadWriter, error)
+}
+
+func server(listener Accepter, processor func(connection io.ReadWriter) (bool, int)) {
+	for {
+		connection, err := listener.Accept()
+		if err != nil {
+			log.Fatal(err)
+		}
+		go func(conn io.ReadWriter) {
+			exit, exitStatus := processor(conn)
+			conn.Close()
+			if exit {
+				os.Exit(exitStatus)
+			}
+		}(connection)
+	}
 }
