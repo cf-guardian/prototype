@@ -4,7 +4,7 @@ package mutex
 // #include <semaphore.h>
 // #include <stdlib.h>
 // #include <sys/stat.h>
-// sem_t* sem_open_(const char * name, int oflag, mode_t mode, unsigned int value) {
+// sem_t* _sem_open(const char * name, int oflag, mode_t mode, unsigned int value) {
 //     return sem_open(name, oflag, mode, value);
 // }
 // sem_t* SEM_FAILED_ = SEM_FAILED;
@@ -43,20 +43,17 @@ func SemOpen(semName string) (Semaphore, error) {
 	n := C.CString(semName)
 	defer C.free(unsafe.Pointer(n))
 
-//	var sem_t unsafe.Pointer
-//	var err error
-
-	sem_t, err := C.sem_open_(n, C.O_CREAT, C.S_IRWXU, 1)
+	sem_t, err := C._sem_open(n, C.O_CREAT, C.S_IRWXU, 1)
 	if sem_t == C.SEM_FAILED_ {
 		return nil, err
 	} else {
-		return &semaphore{semName, unsafe.Pointer(sem_t)}, nil
+		return &semaphore{semName, wrap(sem_t)}, nil
 	}
 }
 
 type semaphore struct {
 	name string
-	sem_t unsafe.Pointer // *C.struct_sem_t
+	sem_t _sem_t
 }
 
 func (sem *semaphore) Wait() error {
@@ -85,4 +82,14 @@ func (sem *semaphore) Destroy() error {
 	} else {
 		return err
 	}
+}
+
+type _sem_t unsafe.Pointer
+
+func wrap(s *_Ctype_sem_t) _sem_t {
+	return _sem_t(unsafe.Pointer(s))
+}
+
+func unwrap(s _sem_t) *_Ctype_sem_t {
+	return (*_Ctype_sem_t)(unsafe.Pointer(s))
 }
