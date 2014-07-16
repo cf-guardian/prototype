@@ -1,12 +1,12 @@
-package mutex_test
+package ipc_test
 
 import (
-	"github.com/cf-guardian/prototype/mutex"
+	"github.com/cf-guardian/prototype/ipc"
 	"testing"
 )
 
 func TestOpen(t *testing.T) {
-	sem, err := mutex.GetSemaphoreMutex("test-sem")
+	sem, err := ipc.GetSemaphoreIPCMutex("test-sem")
 	if err != nil {
 		t.Errorf("Failed: %s", err)
 		return

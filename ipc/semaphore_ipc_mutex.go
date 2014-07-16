@@ -1,4 +1,4 @@
-package mutex
+package ipc
 
 // #include <fcntl.h>
 // #include <semaphore.h>
@@ -18,7 +18,7 @@ import (
 // semaphore can be acquired by at most one user concurrently.
 //
 // If the named semaphore already exists, returns it without modification.
-func GetSemaphoreMutex(semName string) (Mutex, error) {
+func GetSemaphoreIPCMutex(semName string) (IPCMutex, error) {
 	n := C.CString(semName)
 	defer C.free(unsafe.Pointer(n))
 
@@ -26,7 +26,7 @@ func GetSemaphoreMutex(semName string) (Mutex, error) {
 	if sem_t == C.SEM_FAILED_ {
 		return nil, err
 	} else {
-		return &semaphore{semName, wrap(sem_t)}, nil
+		return &semaphore{semName, wrapSem(sem_t)}, nil
 	}
 }
 
@@ -65,10 +65,10 @@ func (sem *semaphore) Destroy() error {
 
 type _sem_t unsafe.Pointer
 
-func wrap(s *_Ctype_sem_t) _sem_t {
+func wrapSem(s *_Ctype_sem_t) _sem_t {
 	return _sem_t(unsafe.Pointer(s))
 }
 
-func unwrap(s _sem_t) *_Ctype_sem_t {
+func unwrapSem(s _sem_t) *_Ctype_sem_t {
 	return (*_Ctype_sem_t)(unsafe.Pointer(s))
 }
