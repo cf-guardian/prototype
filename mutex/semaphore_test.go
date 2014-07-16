@@ -1,7 +1,7 @@
 package mutex_test
 
 import (
-	"github.com/cf-guardian/prototype/libcontainer_api/mutex"
+	"github.com/cf-guardian/prototype/mutex"
 	"testing"
 )
 
