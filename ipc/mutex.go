@@ -3,20 +3,21 @@ package ipc
 // An inter-process mutex.
 type Mutex interface {
 
-	// Acquires this semaphore, blocking first if necessary.
+	// Locks this mutex, blocking first if necessary.
+	// Note: blocks if the current goroutine has already locked the mutex.
 	Lock() error
 
-	// Releases this semaphore.
+	// Unlocks this mutex.
+	// Unlocking a mutex which is not locked is undefined.
 	Unlock() error
 
-	// Attempts to acquire this semaphore, but does not block.
+	// Attempts to lock this mutex, but does not block.
 	TryLock() error
 
-	// Closes this semaphore. It will continue to exist and may be opened again.
-	// If the semaphore is already closed, do nothing.
+	// Closes this mutex, freeing up resources used by the current process.
 	Close() error
 
-	// Deletes the semaphore.
+	// Deletes this mutex.
 	Destroy() error
 
 }
