@@ -6,7 +6,7 @@ import (
 )
 
 func TestOpen(t *testing.T) {
-	sem, err := mutex.SemOpen("test-sem")
+	sem, err := mutex.GetSemaphoreMutex("test-sem")
 	if err != nil {
 		t.Errorf("Failed: %s", err)
 		return

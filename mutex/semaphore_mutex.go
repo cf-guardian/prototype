@@ -18,7 +18,7 @@ import (
 // semaphore can be acquired by at most one user concurrently.
 //
 // If the named semaphore already exists, returns it without modification.
-func SemOpen(semName string) (Mutex, error) {
+func GetSemaphoreMutex(semName string) (Mutex, error) {
 	n := C.CString(semName)
 	defer C.free(unsafe.Pointer(n))
 
@@ -35,15 +35,15 @@ type semaphore struct {
 	sem_t _sem_t
 }
 
-func (sem *semaphore) Wait() error {
+func (sem *semaphore) Lock() error {
 	panic("unimplemented")
 }
 
-func (sem *semaphore) Post() error {
+func (sem *semaphore) Unlock() error {
 	panic("unimplemented")
 }
 
-func (sem *semaphore) TryWait() error {
+func (sem *semaphore) TryLock() error {
 	panic("unimplemented")
 }
 
