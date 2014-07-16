@@ -18,7 +18,7 @@ import (
 // semaphore can be acquired by at most one user concurrently.
 //
 // If the named semaphore already exists, returns it without modification.
-func GetSemaphoreIPCMutex(semName string) (IPCMutex, error) {
+func GetSemaphoreMutex(semName string) (Mutex, error) {
 	n := C.CString(semName)
 	defer C.free(unsafe.Pointer(n))
 

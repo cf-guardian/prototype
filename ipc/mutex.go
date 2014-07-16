@@ -1,7 +1,7 @@
 package ipc
 
 // An inter-process mutex.
-type IPCMutex interface {
+type Mutex interface {
 
 	// Acquires this semaphore, blocking first if necessary.
 	Lock() error

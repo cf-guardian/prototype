@@ -6,7 +6,7 @@ import (
 )
 
 func TestOpen(t *testing.T) {
-	sem, err := ipc.GetSemaphoreIPCMutex("test-sem")
+	sem, err := ipc.GetSemaphoreMutex("test-sem")
 	if err != nil {
 		t.Errorf("Failed: %s", err)
 		return
