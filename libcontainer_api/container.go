@@ -1,5 +1,7 @@
 package libcontainer_api
 
-type Container interface {
+type Id string
 
+type Container interface {
+	Id() Id
 }

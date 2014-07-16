@@ -2,51 +2,21 @@ package collecting
 
 import (
 	api "github.com/cf-guardian/prototype/libcontainer_api"
-	identity "github.com/cf-guardian/prototype/libcontainer_api/identity"
 )
 
-// Manage a collection of named containers.
-// Each container is represented by its identity (Id), and associated with its (external) name by
-// the collection.
+// Manage a collection of containers by name.
+// In the collection each container is associated with an external name.
 type Collector interface {
 
-	// Add a Container (identified by id) to this collection with the given name.
-	Add(name api.Name, id identity.Id) error
+	// Add a Container to this collection with the given name.
+	Add(name api.Name, ctr api.Container) error
 
 	// Remove the given name from this collection.
 	Remove(name api.Name) error
 
-	// Return the internal Id associated with the given name from this collection.
-	Get(name api.Name) (identity.Id, error)
+	// Return the Container associated with the given name from this collection.
+	Get(name api.Name) (api.Container, error)
 
 	// Return the (external) names in this collection.
 	Names() []api.Name
-
-}
-
-var theCollector *collector
-
-// Returns a Collector, after either creating one or finding an existing one.
-func GetCollector() Collector {
-	return theCollector
-}
-
-type collector struct {
-
-}
-
-func (coll *collector) Add(name api.Name, id identity.Id) error {
-	panic("unimplemented")
-}
-
-func (coll *collector) Remove(name api.Name) error {
-	panic("unimplemented")
-}
-
-func (coll *collector) Get(name api.Name) (identity.Id, error) {
-	panic("unimplemented")
-}
-
-func (coll *collector) Names() []api.Name {
-	panic("unimplemented")
 }

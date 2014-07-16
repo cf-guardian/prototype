@@ -25,12 +25,12 @@ func CreateSimpleIdentifier() Identifier {
 	return &simpleIdentifier{seed: rand.Int63()}
 }
 
-func (this *simpleIdentifier) Generate() Id {
+func (this *simpleIdentifier) Generate() api.Id {
 	// Next line makes this thread-safe
 	next := atomic.AddInt64(&this.seed, 1) // increment this.seed, atomically
-	return Id(fmt.Sprintf(idFormat, next))
+	return api.Id(fmt.Sprintf(idFormat, next))
 }
 
-func (*simpleIdentifier) Name(id Id) api.Name {
+func (*simpleIdentifier) Name(id api.Id) api.Name {
 	return api.Name(id)
 }

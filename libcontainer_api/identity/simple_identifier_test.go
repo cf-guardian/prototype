@@ -1,6 +1,7 @@
 package identity
 
 import (
+	api "github.com/cf-guardian/prototype/libcontainer_api"
 	"strings"
 	"testing"
 )
@@ -39,7 +40,7 @@ func TestSIForm(t *testing.T) {
 }
 
 func TestSIMulti(t *testing.T) {
-	var genArr [LARGEISH_NUMBER]Id
+	var genArr [LARGEISH_NUMBER]api.Id
 
 	ider := CreateSimpleIdentifier()
 	for i := 0; i < LARGEISH_NUMBER; i++ {
@@ -47,7 +48,7 @@ func TestSIMulti(t *testing.T) {
 	}
 
 	// Now check they are all different
-	set := make(map[Id]struct{})
+	set := make(map[api.Id]struct{})
 	for i := 0; i < LARGEISH_NUMBER; i++ {
 		set[genArr[i]] = struct{}{}
 	}
@@ -58,7 +59,7 @@ func TestSIMulti(t *testing.T) {
 }
 
 func TestSIClash(t *testing.T) {
-	var genArr [LARGEISH_NUMBER]Id
+	var genArr [LARGEISH_NUMBER]api.Id
 
 	ider1 := CreateSimpleIdentifier()
 	ider2 := CreateSimpleIdentifier()
@@ -67,7 +68,7 @@ func TestSIClash(t *testing.T) {
 		genArr[i] = ider1.Generate()
 	}
 
-	set := make(map[Id]struct{})
+	set := make(map[api.Id]struct{})
 	for i := 0; i < LARGEISH_NUMBER; i++ {
 		set[genArr[i]] = struct{}{}
 	}
@@ -87,15 +88,15 @@ func TestSIClash(t *testing.T) {
 func TestSIThreadSafe(t *testing.T) {
 	// Should be run with GOMAXPROCS>1 to detect thread-unsafeness.
 	ider := CreateSimpleIdentifier()
-	done1 := make(chan []Id)
-	done2 := make(chan []Id)
+	done1 := make(chan []api.Id)
+	done2 := make(chan []api.Id)
 
 	go callSIGenerate(ider, done1)
 	go callSIGenerate(ider, done2)
 
 	genArr := <-done1
 
-	set := make(map[Id]struct{})
+	set := make(map[api.Id]struct{})
 	for i := 0; i < LARGEISH_NUMBER; i++ {
 		set[genArr[i]] = struct{}{}
 	}
@@ -108,8 +109,8 @@ func TestSIThreadSafe(t *testing.T) {
 	}
 }
 
-func callSIGenerate(ider Identifier, result chan []Id) {
-	var genArr []Id = make([]Id, LARGEISH_NUMBER)
+func callSIGenerate(ider Identifier, result chan []api.Id) {
+	var genArr []api.Id = make([]api.Id, LARGEISH_NUMBER)
 
 	for i := 0; i < LARGEISH_NUMBER; i++ {
 		genArr[i] = ider.Generate()
