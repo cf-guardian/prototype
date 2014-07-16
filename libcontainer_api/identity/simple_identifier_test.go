@@ -83,3 +83,35 @@ func TestSIClash(t *testing.T) {
 	if l := len(set); l < 2*LARGEISH_NUMBER {
 	}
 }
+
+func TestSIThreadSafe(t *testing.T) {
+	ider := CreateSimpleIdentifier()
+	done1 := make(chan []Id)
+	done2 := make(chan []Id)
+
+	go callSIGenerate(ider, done1)
+	go callSIGenerate(ider, done2)
+
+	genArr := <- done1
+
+	set := make(map[Id]struct{})
+	for i := 0; i < LARGEISH_NUMBER; i++ {
+		set[genArr[i]] = struct{}{}
+	}
+
+	// Now check the ones from done2 don't clash
+	for _, gid := range <-done2 {
+		if _, has := set[gid]; has {
+			t.Errorf("Identifiers clashed: %q generated before!", gid)
+		}
+	}
+}
+
+func callSIGenerate(ider Identifier, result chan []Id) {
+	var genArr []Id = make([]Id, LARGEISH_NUMBER)
+
+	for i := 0; i < LARGEISH_NUMBER; i++ {
+		genArr[i] = ider.Generate()
+	}
+	result <- genArr
+}

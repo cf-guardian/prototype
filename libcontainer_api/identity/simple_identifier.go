@@ -1,10 +1,11 @@
 package identity
 
 import (
-	rand "math/rand"
-	api "github.com/cf-guardian/prototype/libcontainer_api"
-	"time"
 	"fmt"
+	api "github.com/cf-guardian/prototype/libcontainer_api"
+	rand "math/rand"
+	"sync/atomic"
+	"time"
 )
 
 type simpleIdentifier struct {
@@ -14,8 +15,8 @@ type simpleIdentifier struct {
 // implementation parameters
 const (
 	idPrefix string = "SI"
-	idLength int = 22
-	idFormat string = "SI%020d"	// consistent with idPrefix and idLength
+	idLength int    = 22
+	idFormat string = "SI%020d" // consistent with idPrefix and idLength
 )
 
 func CreateSimpleIdentifier() Identifier {
@@ -25,8 +26,9 @@ func CreateSimpleIdentifier() Identifier {
 }
 
 func (this *simpleIdentifier) Generate() Id {
-	this.seed++
-	return Id(fmt.Sprintf(idFormat, this.seed))
+	// Next line makes this thread-safe
+	next := atomic.AddInt64(&this.seed, 1) // increment this.seed, atomically
+	return Id(fmt.Sprintf(idFormat, next))
 }
 
 func (*simpleIdentifier) Name(id Id) api.Name {
