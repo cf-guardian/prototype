@@ -95,4 +95,3 @@ func TestTryLock(t *testing.T) {
 //		t.Fatalf("Failed Destroy: %s", err)
 //	}
 //}
-

@@ -1,9 +1,9 @@
 package collecting
 
 import (
-	"testing"
 	api "github.com/cf-guardian/prototype/libcontainer_api"
 	identity "github.com/cf-guardian/prototype/libcontainer_api/identity"
+	"testing"
 )
 
 var identifier identity.Identifier = identity.CreateSimpleIdentifier()
@@ -39,19 +39,19 @@ const (
 func TestLCAdd(t *testing.T) {
 	lc := LocalCollection()
 	ctr1 := createContainer()
-	if err := lc.Add(api.Name(name1), ctr1); err!=nil {
+	if err := lc.Add(api.Name(name1), ctr1); err != nil {
 		t.Fatalf("Add failed. %s", err)
 	}
 
 	if nms := lc.Names(); len(nms) != 1 {
 		t.Fatalf("Collection should have one entry.")
 	}
-	if nm:=lc.Names()[0]; name1!=nm {
+	if nm := lc.Names()[0]; name1 != nm {
 		t.Fatalf("Collection should have single entry named %q, but %q instead.", name1, nm)
 	}
 
 	ctr2 := createContainer()
-	if err := lc.Add(api.Name(name2), ctr2); err!=nil {
+	if err := lc.Add(api.Name(name2), ctr2); err != nil {
 		t.Fatalf("Add failed. %s", err)
 	}
 
@@ -63,22 +63,22 @@ func TestLCAdd(t *testing.T) {
 func TestLCRemove(t *testing.T) {
 	lc := LocalCollection()
 	ctr1 := createContainer()
-	if err := lc.Add(api.Name(name1), ctr1); err!=nil {
+	if err := lc.Add(api.Name(name1), ctr1); err != nil {
 		t.Fatalf("Add failed. %s", err)
 	}
-	if err := lc.Add(api.Name(name2), ctr1); err!=nil {
+	if err := lc.Add(api.Name(name2), ctr1); err != nil {
 		t.Fatalf("Add failed. %s", err)
 	}
 
-	if err := lc.Remove(api.Name(name1)); err!=nil {
+	if err := lc.Remove(api.Name(name1)); err != nil {
 		t.Fatalf("Could not Remove(name1). %s", err)
 	}
 
-	if nms:=lc.Names(); len(nms) !=1 {
+	if nms := lc.Names(); len(nms) != 1 {
 		t.Fatalf("Entry not removed. Names() = %v", nms)
 	}
 
-	if nm:=lc.Names()[0]; name2!=nm {
+	if nm := lc.Names()[0]; name2 != nm {
 		t.Fatalf("Collection should have single entry named %q, but %q instead.", name2, nm)
 	}
 }
@@ -94,25 +94,25 @@ func TestLCGet(t *testing.T) {
 		t.Fatalf("Add failed. %s", err)
 	}
 	gctr1, err1 := lc.Get(api.Name(name1))
-	if err1!=nil {
+	if err1 != nil {
 		t.Fatalf("Get(%q) failed with error %s", name1, err1)
 	}
 	if ctr1.Id() != gctr1.Id() {
 		t.Fatalf("Correct container not Get(name=%q), id=%q, id of result = %q.", name1, ctr1.Id(), gctr1.Id())
 	}
 	gctr2, err2 := lc.Get(api.Name(name2))
-	if err2!=nil {
+	if err2 != nil {
 		t.Fatalf("Get(%q) failed with error %s", name2, err2)
 	}
 	if ctr2.Id() != gctr2.Id() {
 		t.Fatalf("Correct container not Get(name=%q), id=%q, id of result = %q.", name2, ctr2.Id(), gctr2.Id())
 	}
 
-	if err := lc.Remove(api.Name(name1)); err!=nil {
+	if err := lc.Remove(api.Name(name1)); err != nil {
 		t.Fatalf("Could not Remove(name1). %s", err)
 	}
 	_, err3 := lc.Get(api.Name(name1))
-	if err3==nil {
+	if err3 == nil {
 		t.Fatalf("Get(%q) should fail!", name1)
 	}
 }

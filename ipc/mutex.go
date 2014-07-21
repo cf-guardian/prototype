@@ -19,5 +19,4 @@ type Mutex interface {
 
 	// Deletes this mutex.
 	Destroy() error
-
 }

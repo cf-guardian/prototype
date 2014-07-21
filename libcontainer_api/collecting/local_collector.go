@@ -5,13 +5,13 @@ package collecting
 // this implementation directly.
 
 import (
-	api "github.com/cf-guardian/prototype/libcontainer_api"
 	"fmt"
+	api "github.com/cf-guardian/prototype/libcontainer_api"
 )
 
 // local error type
 type c_error struct {
-	e_msg string
+	e_msg  string
 	e_name api.Name
 }
 

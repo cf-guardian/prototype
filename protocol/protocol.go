@@ -2,10 +2,10 @@
 
 package main
 
-import 	"code.google.com/p/goprotobuf/proto"
-import 	"fmt"
-import 	"github.com/cf-guardian/prototype/protocol/message"
-import 	"log"
+import "code.google.com/p/goprotobuf/proto"
+import "fmt"
+import "github.com/cf-guardian/prototype/protocol/message"
+import "log"
 
 func main() {
 	testMsg := &message.SlaveMessage{

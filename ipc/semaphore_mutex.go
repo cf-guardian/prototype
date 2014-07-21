@@ -30,7 +30,7 @@ func GetSemaphoreMutex(semName string) (Mutex, error) {
 }
 
 type semaphore struct {
-	name string
+	name      string
 	posix_sem _sem_t
 }
 

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"os/exec"
 	"os"
+	"os/exec"
 	"strings"
 	"time"
 )
@@ -91,7 +91,7 @@ func receive(connection net.Conn) string {
 			log.Fatal(err)
 		}
 		rep := string(reply[:n])
-		result = result+rep
+		result = result + rep
 		if strings.Index(rep, "\n") != -1 {
 			done = true
 		}
