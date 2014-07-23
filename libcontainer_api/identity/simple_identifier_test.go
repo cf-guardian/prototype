@@ -2,9 +2,14 @@ package identity
 
 import (
 	api "github.com/cf-guardian/prototype/libcontainer_api"
+	"github.com/cf-guardian/prototype/utils"
 	"strings"
 	"testing"
 )
+
+func init() {
+	utils.OptimiseScheduling()
+}
 
 // Test the SimpleIdentifier implementation of Identifier
 
