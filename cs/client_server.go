@@ -5,27 +5,33 @@ import (
 	"log"
 	"net"
 	"os"
-	"os/exec"
+	"github.com/cf-guardian/prototype/container"
 	"strings"
 	"time"
+	"os/exec"
+	"github.com/cf-guardian/prototype/utils"
+	"syscall"
 )
 
 func main() {
+
+	utils.OptimiseScheduling()
 
 	args := os.Args
 	if len(args) > 1 && args[1] == "server" {
 		server()
 	} else {
-		cmd := exec.Command(args[0], "server")
-
-		if err := cmd.Start(); err != nil {
+		var c container.Container
+		var err error
+		if c, err = container.CreatePidContainer(args[0], "server"); err != nil {
 			log.Fatal(err)
 		}
+
 		time.Sleep(100 * time.Millisecond)
 
 		client()
 
-		if err := cmd.Wait(); err != nil {
+		if err := c.Terminate(); err != nil {
 			log.Fatalf("cmd.Wait failed: %v", err)
 		}
 	}
@@ -68,11 +74,40 @@ func server() {
 					connection.Close()
 					os.Exit(0)
 				}
-				response := fmt.Sprintf("response to %s\n", strings.Trim(req, "\n"))
+
+				// Gather evidence of being inside a PID namespace
+				var evidence string
+				evidence = getEvidence()
+
+				response := fmt.Sprintf("response to %s\nEvidence:\n%s\n", strings.Trim(req, "\n"), evidence)
 				send(connection, response)
 			}
 		}(connection)
 	}
+}
+
+const defaultMountFlags = syscall.MS_NOEXEC | syscall.MS_NOSUID | syscall.MS_NODEV
+
+func getEvidence() string {
+	// Remount /proc
+	// mount -t proc none /proc
+	if err := syscall.Unmount("/proc", syscall.MNT_DETACH); err != nil {
+		return fmt.Sprintf("syscall.Unmount error", err.Error())
+	}
+
+	if err := syscall.Mount("proc", "/proc", "proc", uintptr(defaultMountFlags), ""); err != nil {
+		return fmt.Sprintf("syscall.Mount error", err.Error())
+	}
+
+	cmd := exec.Command("/bin/ps", "-uf")
+
+	bytes, err := cmd.Output()
+	if (err != nil) {
+		return fmt.Sprintf("cmd.Output error", err.Error())
+	}
+
+	cmd.Wait()
+	return string(bytes)
 }
 
 func send(connection net.Conn, request string) {
