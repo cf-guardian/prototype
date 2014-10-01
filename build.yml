@@ -1,0 +1,8 @@
+---
+image: docker:///cloudfoundry/warden-ci
+
+paths:
+  prototype: gopath/src/github.com/cf-guardian/prototype
+
+run:
+  path: gopath/src/github.com/cf-guardian/prototype/scripts/container-test

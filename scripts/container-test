@@ -1,0 +1,13 @@
+#!/bin/bash
+
+export GOROOT=/usr/local/go
+export PATH=$GOROOT/bin:$PATH
+
+export GOPATH=$PWD/gopath
+export PATH=$GOPATH/bin:$PATH
+
+cd $(dirname $0)/..
+
+#apt-get -y install strace
+
+cd container/init && go install . && cd ../../cs && go install . && cs
