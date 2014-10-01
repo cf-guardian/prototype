@@ -6,8 +6,12 @@ import (
 	"github.com/cf-guardian/prototype/namespaces"
 	"github.com/cf-guardian/prototype/utils"
 	"os/exec"
+	_ "github.com/cf-guardian/prototype/namespaces/ipc_namespace"
 	_ "github.com/cf-guardian/prototype/namespaces/mount_namespace"
+	_ "github.com/cf-guardian/prototype/namespaces/network_namespace"
 	_ "github.com/cf-guardian/prototype/namespaces/pid_namespace"
+	_ "github.com/cf-guardian/prototype/namespaces/user_namespace"
+	_ "github.com/cf-guardian/prototype/namespaces/uts_namespace"
 	"strconv"
 )
 

@@ -1,7 +1,6 @@
 // +build linux
 package mount_namespace
 
-
 import (
 	"fmt"
 	"github.com/cf-guardian/prototype/namespaces"

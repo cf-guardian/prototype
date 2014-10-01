@@ -12,8 +12,11 @@ import (
 	"github.com/cf-guardian/prototype/utils"
 	"syscall"
 	"github.com/cf-guardian/prototype/namespaces"
+	"github.com/cf-guardian/prototype/namespaces/ipc_namespace"
 	"github.com/cf-guardian/prototype/namespaces/mount_namespace"
 	"github.com/cf-guardian/prototype/namespaces/pid_namespace"
+//	"github.com/cf-guardian/prototype/namespaces/user_namespace"
+	"github.com/cf-guardian/prototype/namespaces/uts_namespace"
 )
 
 func main() {
@@ -24,7 +27,8 @@ func main() {
 	if len(args) > 1 && args[1] == "server" {
 		server()
 	} else {
-		ns := namespaces.New(mount_namespace.Id, pid_namespace.Id)
+		// TODO: add network namespace which will require veth support.
+		ns := namespaces.New(mount_namespace.Id, pid_namespace.Id, uts_namespace.Id, ipc_namespace.Id/*, user_namespace.Id*/)
 
 		var c container.Container
 		var err error
