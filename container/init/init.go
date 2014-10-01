@@ -24,8 +24,12 @@ func main() {
 
 	args := os.Args
 	if len(args) >= 3 {
-		cloneFlags, _ := strconv.ParseInt(args[1], 16, 0)
-		if err := namespaces.InNamespaces(int(cloneFlags)); err != nil {
+		nsFlags, err := strconv.ParseInt(args[1], 16, 0)
+		if err != nil {
+			log.Fatalf("Invalid namespace flags passed to init: %s\n", args[1])
+		}
+
+		if err := namespaces.InNamespaces(int(nsFlags)); err != nil {
 			log.Fatalf("Init process namespace initialisation failed: %s\n", err)
 		}
 		cmd := exec.Command(args[2], args[3:]...)
