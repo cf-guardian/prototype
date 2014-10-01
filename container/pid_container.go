@@ -15,7 +15,7 @@ type pid_container struct {
 	cmd *exec.Cmd
 }
 
-func CreatePidContainer(executable string, args... string) (Container, error) {
+func CreateContainer(executable string, args... string) (Container, error) {
 	err := checkRoot()
 	if err != nil {
 		return nil, err

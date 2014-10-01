@@ -24,7 +24,7 @@ func main() {
 	} else {
 		var c container.Container
 		var err error
-		if c, err = container.CreatePidContainer(args[0], "server"); err != nil {
+		if c, err = container.CreateContainer(args[0], "server"); err != nil {
 			log.Fatal(err)
 		}
 
