@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"github.com/cf-guardian/prototype/utils"
 	"syscall"
+	"github.com/cf-guardian/prototype/namespaces"
 )
 
 func main() {
@@ -57,6 +58,12 @@ func client() {
 }
 
 func server() {
+	// Temporary position
+	err := namespaces.InNamespaces()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	listener, err := net.Listen("tcp", ":2345")
 	if err != nil {
 		log.Fatal(err)
@@ -89,15 +96,14 @@ func server() {
 const defaultMountFlags = syscall.MS_NOEXEC | syscall.MS_NOSUID | syscall.MS_NODEV
 
 func getEvidence() string {
-	// Remount /proc
-	// mount -t proc none /proc
-	if err := syscall.Unmount("/proc", syscall.MNT_DETACH); err != nil {
-		return fmt.Sprintf("syscall.Unmount error", err.Error())
-	}
-
-	if err := syscall.Mount("proc", "/proc", "proc", uintptr(defaultMountFlags), ""); err != nil {
-		return fmt.Sprintf("syscall.Mount error", err.Error())
-	}
+//	// Remount /proc
+//	if err := syscall.Unmount("/proc", syscall.MNT_DETACH); err != nil {
+//		return fmt.Sprintf("syscall.Unmount error", err.Error())
+//	}
+//
+//	if err := syscall.Mount("proc", "/proc", "proc", uintptr(defaultMountFlags), ""); err != nil {
+//		return fmt.Sprintf("syscall.Mount error", err.Error())
+//	}
 
 	cmd := exec.Command("/bin/ps", "-uf")
 

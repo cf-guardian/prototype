@@ -6,6 +6,9 @@ import (
 	"os"
 	"os/exec"
 	"syscall"
+	"github.com/cf-guardian/prototype/namespaces"
+	_ "github.com/cf-guardian/prototype/namespaces/mount_namespace"
+	_ "github.com/cf-guardian/prototype/namespaces/pid_namespace"
 )
 
 type pid_container struct {
@@ -23,7 +26,7 @@ func CreatePidContainer(executable string, args... string) (Container, error) {
 	if cmd.SysProcAttr == nil {
 		cmd.SysProcAttr = &syscall.SysProcAttr{}
 	}
-	cmd.SysProcAttr.Cloneflags = uintptr(syscall.CLONE_NEWPID|syscall.CLONE_NEWNS)
+	cmd.SysProcAttr.Cloneflags = uintptr(namespaces.CloneFlags())
 	cmd.SysProcAttr.Pdeathsig = syscall.SIGKILL
 
 	err = cmd.Start()
