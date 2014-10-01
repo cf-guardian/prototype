@@ -7,24 +7,21 @@ import (
 	"os/exec"
 	"syscall"
 	"github.com/cf-guardian/prototype/namespaces"
-	_ "github.com/cf-guardian/prototype/namespaces/mount_namespace"
-	_ "github.com/cf-guardian/prototype/namespaces/pid_namespace"
 )
 
 type container struct {
 	cmd *exec.Cmd
 }
 
-func CreateContainer(executable string, args... string) (Container, error) {
+func CreateContainer(ns namespaces.Namespaces, executable string, args... string) (Container, error) {
 	err := checkRoot()
 	if err != nil {
 		return nil, err
 	}
 
-	cloneFlags := namespaces.CloneFlags()
+	cloneFlags := ns.CloneFlags()
 
 	initArgs := make([]string, 0, len(args) + 1)
-//	initArgs = append(initArgs, strconv.Itoa(cloneFlags))
 	initArgs = append(initArgs, fmt.Sprintf("%x", cloneFlags))
 	initArgs = append(initArgs, executable)
 	initArgs = append(initArgs, args...)

@@ -8,10 +8,11 @@ import (
 	"syscall"
 )
 
+const Id = syscall.CLONE_NEWNS
+
 const defaultMountFlags = syscall.MS_NOEXEC | syscall.MS_NOSUID | syscall.MS_NODEV
 
 func init() {
-	namespaces.AddCloneFlag(syscall.CLONE_NEWNS)
 	namespaces.RegisterCallback(syscall.CLONE_NEWNS, InNamespace)
 }
 

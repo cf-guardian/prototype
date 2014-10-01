@@ -5,19 +5,8 @@ import (
 	"fmt"
 )
 
-var cloneFlags int
 var mutex *sync.Mutex = &sync.Mutex{}
 var callbacks map[int] func() error = make(map[int] func() error, 20)
-
-func AddCloneFlag(cloneFlag int) {
-	mutex.Lock()
-	cloneFlags |= cloneFlag
-	mutex.Unlock()
-}
-
-func CloneFlags() int {
-	return cloneFlags
-}
 
 func RegisterCallback(cloneFlag int, callback func() error) {
 	mutex.Lock()
@@ -37,4 +26,35 @@ func InNamespaces(cloneFlags int) error {
 		}
 	}
 	return nil
+}
+
+type NamespaceId int
+
+type Namespaces interface {
+	Add(id... NamespaceId) Namespaces
+	CloneFlags() int
+}
+
+type namespaces map[NamespaceId] bool
+
+func New(ids... NamespaceId) Namespaces {
+	ns := namespaces(make(map[NamespaceId] bool, 20))
+	ns.Add(ids...)
+	return ns
+}
+
+func (ns namespaces) Add(ids... NamespaceId) Namespaces {
+	for _, id := range ids {
+		ns[id] = true
+	}
+
+	return ns
+}
+
+func (ns namespaces) CloneFlags() int {
+	var cloneFlags int
+	for id, _ := range ns {
+		cloneFlags |= int(id)
+	}
+	return cloneFlags
 }

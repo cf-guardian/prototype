@@ -11,6 +11,9 @@ import (
 	"os/exec"
 	"github.com/cf-guardian/prototype/utils"
 	"syscall"
+	"github.com/cf-guardian/prototype/namespaces"
+	"github.com/cf-guardian/prototype/namespaces/mount_namespace"
+	"github.com/cf-guardian/prototype/namespaces/pid_namespace"
 )
 
 func main() {
@@ -21,9 +24,11 @@ func main() {
 	if len(args) > 1 && args[1] == "server" {
 		server()
 	} else {
+		ns := namespaces.New(mount_namespace.Id, pid_namespace.Id)
+
 		var c container.Container
 		var err error
-		if c, err = container.CreateContainer(args[0], "server"); err != nil {
+		if c, err = container.CreateContainer(ns, args[0], "server"); err != nil {
 			log.Fatal(err)
 		}
 
