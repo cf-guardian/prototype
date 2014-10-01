@@ -11,7 +11,7 @@ import (
 	_ "github.com/cf-guardian/prototype/namespaces/pid_namespace"
 )
 
-type pid_container struct {
+type container struct {
 	cmd *exec.Cmd
 }
 
@@ -21,20 +21,28 @@ func CreateContainer(executable string, args... string) (Container, error) {
 		return nil, err
 	}
 
-	cmd := exec.Command(executable, args...)
+	cloneFlags := namespaces.CloneFlags()
+
+	initArgs := make([]string, 0, len(args) + 1)
+//	initArgs = append(initArgs, strconv.Itoa(cloneFlags))
+	initArgs = append(initArgs, fmt.Sprintf("%x", cloneFlags))
+	initArgs = append(initArgs, executable)
+	initArgs = append(initArgs, args...)
+
+	cmd := exec.Command("init", initArgs...)
 
 	if cmd.SysProcAttr == nil {
 		cmd.SysProcAttr = &syscall.SysProcAttr{}
 	}
-	cmd.SysProcAttr.Cloneflags = uintptr(namespaces.CloneFlags())
+	cmd.SysProcAttr.Cloneflags = uintptr(cloneFlags)
 	cmd.SysProcAttr.Pdeathsig = syscall.SIGKILL
 
 	err = cmd.Start()
 
-	return &nil_container{cmd}, err
+	return &container{cmd}, err
 }
 
-func (c *pid_container) Terminate() error {
+func (c *container) Terminate() error {
 	return c.cmd.Wait()
 }
 

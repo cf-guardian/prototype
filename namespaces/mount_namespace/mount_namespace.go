@@ -12,7 +12,7 @@ const defaultMountFlags = syscall.MS_NOEXEC | syscall.MS_NOSUID | syscall.MS_NOD
 
 func init() {
 	namespaces.AddCloneFlag(syscall.CLONE_NEWNS)
-	namespaces.RegisterCallback(InNamespace)
+	namespaces.RegisterCallback(syscall.CLONE_NEWNS, InNamespace)
 }
 
 func InNamespace() error {

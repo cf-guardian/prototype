@@ -11,7 +11,6 @@ import (
 	"os/exec"
 	"github.com/cf-guardian/prototype/utils"
 	"syscall"
-	"github.com/cf-guardian/prototype/namespaces"
 )
 
 func main() {
@@ -28,7 +27,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(200 * time.Millisecond)
 
 		client()
 
@@ -58,12 +57,6 @@ func client() {
 }
 
 func server() {
-	// Temporary position
-	err := namespaces.InNamespaces()
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	listener, err := net.Listen("tcp", ":2345")
 	if err != nil {
 		log.Fatal(err)

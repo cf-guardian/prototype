@@ -1,7 +1,5 @@
 #!/bin/bash
 
-echo "Hello"
-
 export GOROOT=/usr/local/go
 export PATH=$GOROOT/bin:$PATH
 
@@ -12,6 +10,4 @@ cd $(dirname $0)/..
 
 #apt-get -y install strace
 
-cd cs
-go install .
-cs
+cd container/init && go install . && cd ../../cs && go install . && cs

@@ -7,7 +7,7 @@ import (
 
 var cloneFlags int
 var mutex *sync.Mutex = &sync.Mutex{}
-var callbacks []func() error
+var callbacks map[int] func() error = make(map[int] func() error, 20)
 
 func AddCloneFlag(cloneFlag int) {
 	mutex.Lock()
@@ -19,19 +19,21 @@ func CloneFlags() int {
 	return cloneFlags
 }
 
-func RegisterCallback(callback func() error) {
+func RegisterCallback(cloneFlag int, callback func() error) {
 	mutex.Lock()
-	callbacks  = append(callbacks, callback)
+	callbacks[cloneFlag] = callback
 	mutex.Unlock()
 }
 
-func InNamespaces() error {
+func InNamespaces(cloneFlags int) error {
 	mutex.Lock()
 	cbs := callbacks
 	mutex.Unlock()
-	for _, cb := range cbs {
-		if err := cb(); err != nil {
-			return fmt.Errorf("Namespace callback %s failed: %s", cb, err.Error())
+	for cloneFlag, cb := range cbs {
+		if cloneFlags&cloneFlag != 0 {
+			if err := cb(); err != nil {
+				return fmt.Errorf("Namespace callback %s failed: %s", cb, err.Error())
+			}
 		}
 	}
 	return nil
