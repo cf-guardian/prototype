@@ -1,4 +1,4 @@
-Prototyping
+# Prototyping
 
 The contents of this repository are copyright the authors.
 
@@ -7,9 +7,9 @@ blaming us.
 
 We'll open source this when we are ready, thank you.
 
-= Running the container prototype
+# Running the container prototype
 
-Get [Concourse](https://github.com/concourse/concourse) running locally, install fly:
+Get [Concourse](https://github.com/concourse/concourse) running locally. Then install fly:
 ```
 go get github.com/concourse/fly
 
