@@ -28,6 +28,7 @@ func main() {
 		server()
 	} else {
 		// TODO: add network namespace which will require veth support.
+		// TODO: add user namespace support when Go 1.4 is available.
 		ns := namespaces.New(mount_namespace.Id, pid_namespace.Id, uts_namespace.Id, ipc_namespace.Id/*, user_namespace.Id*/)
 
 		var c container.Container
