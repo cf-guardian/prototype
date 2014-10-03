@@ -21,7 +21,7 @@ func CreateContainer(ns namespaces.Namespaces, executable string, args... string
 
 	cloneFlags := ns.CloneFlags()
 
-	initArgs := make([]string, 0, len(args) + 1)
+	initArgs := make([]string, 0, len(args)+1)
 	initArgs = append(initArgs, fmt.Sprintf("%x", cloneFlags))
 	initArgs = append(initArgs, executable)
 	initArgs = append(initArgs, args...)
@@ -33,6 +33,55 @@ func CreateContainer(ns namespaces.Namespaces, executable string, args... string
 	}
 	cmd.SysProcAttr.Cloneflags = uintptr(cloneFlags)
 	cmd.SysProcAttr.Pdeathsig = syscall.SIGKILL
+
+	// DEBUG
+//	if output, err := cmd.CombinedOutput(); err != nil {
+//		return nil, fmt.Errorf("DEBUG cmd.CombinedOutput error", err.Error())
+//	} else {
+//		fmt.Println(string(output))
+//	}
+	// DEBUG
+
+	stdOut, err := cmd.StdoutPipe()
+	if err != nil {
+		return nil, err
+	}
+	stdErr, err := cmd.StderrPipe()
+	if err != nil {
+		return nil, err
+	}
+	go func() {
+		data := make([]byte, 1024)
+		for {
+			n, err := stdOut.Read(data)
+			if n > 0 {
+				_, err = fmt.Println(string(data[:]))
+				if err != nil {
+					return
+				}
+			}
+			if err != nil {
+				fmt.Printf("Error reading standard output pipe: %s\n", err)
+				return
+			}
+		}
+	}()
+	go func() {
+		data := make([]byte, 1024)
+		for {
+			n, err := stdErr.Read(data)
+			if n > 0 {
+				_, err = fmt.Println(string(data[:]))
+				if err != nil {
+					return
+				}
+			}
+			if err != nil {
+				fmt.Printf("Error reading standard error pipe: %s\n", err)
+				return
+			}
+		}
+	}()
 
 	err = cmd.Start()
 
